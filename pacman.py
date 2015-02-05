@@ -65,7 +65,6 @@ class Pac:
 		self.images = [pygame.image.load('pacman2.png'), myimage, pygame.transform.rotate(myimage,-90), pygame.transform.rotate(myimage, 90), pygame.transform.rotate(myimage,180)]
 
 	def turns(self):
-		global myimage
 		for event in pygame.event.get():
 			if event.type == QUIT:
 				exit()
@@ -331,17 +330,17 @@ def modifyGrid():
 			elif (grid[y][x] == 9):
 				pygame.draw.rect(screen,(25, 25, 25),Rect(192+x*32,39+y*32,32,32),3)
 			elif (grid[y][x] == 5):
-				screen.blit(blinky.image, Rect(191+x*32+2,38+y*32+2,28,28))
+				screen.blit(blinky.image, Rect(190+x*32+2,38+y*32+2,28,28))
 			elif (grid[y][x] == 6):
-				screen.blit(pinky.image, Rect(191+x*32+2,38+y*32+2,28,28))
+				screen.blit(pinky.image, Rect(190+x*32+2,38+y*32+2,28,28))
 			elif (grid[y][x] == 7):
-				screen.blit(clyde.image, Rect(191+x*32+2,38+y*32+2,28,28))
+				screen.blit(clyde.image, Rect(190+x*32+2,38+y*32+2,28,28))
 			elif (grid[y][x] == 8):
-				screen.blit(inky.image, Rect(191+x*32+2,38+y*32+2,28,28))
+				screen.blit(inky.image, Rect(190+x*32+2,38+y*32+2,28,28))
 			elif (grid[y][x] == -1):
-				screen.blit(scared, Rect(191+x*32+2,38+y*32+2,28,28))
+				screen.blit(scared, Rect(190+x*32+2,38+y*32+2,28,28))
 			elif (grid[y][x] == -2):
-				screen.blit(eyes, Rect(191+x*32+2,38+y*32+2,28,28))
+				screen.blit(eyes, Rect(190+x*32+2,38+y*32+2,28,28))
 	for i in range(lives):
 		screen.blit(myimage, Rect(20 + 30*i,20,28,28))
 
