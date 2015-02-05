@@ -11,11 +11,11 @@ pygame.init()
 screen=pygame.display.set_mode((1024,718),0,32)
 pygame.display.set_caption("PacMan!")
 pygame.font.init()
+
 #Initialize Back Ground
 back = pygame.Surface((1024,718))
 background = back.convert()
 background.fill((0,0,0))
-
 
 # Initialize Images
 myimage = pygame.image.load('pacman.png')
@@ -29,13 +29,14 @@ pinkyImages = [None, pygame.image.load('pinky1.png'), pygame.image.load('pinky2.
 inkyImages = [None, pygame.image.load('inky1.png'), pygame.image.load('inky2.png'), pygame.image.load('inky-2.png'), pygame.image.load('inky-1.png')]
 clydeImages = [None, pygame.image.load('clyde1.png'), pygame.image.load('clyde2.png'), pygame.image.load('clyde-2.png'), pygame.image.load('clyde-1.png')]
 
+# Initialize In Game Variables
 score = 0
 ghost = 0
 lives = 3
 gameOver = False
 
-grid = [[4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4], #Field for the game
-        [4,3,2,2,2,2,2,2,2,4,4,2,2,2,2,2,2,2,3,4],
+grid = [[4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4], # Field for the game
+        [4,3,2,2,2,2,2,2,2,4,4,2,2,2,2,2,2,2,3,4], # 0: Blank, 1: Mr. Pac, 2: Food, 3: Power Up!, 4: Wall, 5: Blinky, 6: Pinky, 7: Clyde, 8: Inky, 9: Spawner
         [4,2,4,4,2,4,4,4,2,4,4,2,4,4,4,2,4,4,2,4],
         [4,2,4,4,2,2,2,2,2,2,1,2,2,2,2,2,4,4,2,4],
         [4,2,2,2,2,4,2,4,4,4,4,4,4,2,4,2,2,2,2,4],
@@ -54,18 +55,18 @@ grid = [[4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4], #Field for the game
         [4,2,4,4,2,4,2,2,2,4,4,2,2,2,4,2,4,4,2,4],
         [4,3,2,2,2,4,4,4,2,2,2,2,4,4,4,2,2,2,3,4],
         [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4]]
-
+#GPIO connections
 pins = [K_RIGHT, K_LEFT, K_UP, K_DOWN, K_d, K_a, K_w, K_s]
 
 class Pac:
 	def __init__(self,x,y,direction):
-		self.x=x #10
-		self.y=y #4
+		self.x=x # 10
+		self.y=y # 4
 		self.direction=direction
 		self.open = True
 		self.images = [pygame.image.load('pacman2.png'), myimage, pygame.transform.rotate(myimage,-90), pygame.transform.rotate(myimage, 90), pygame.transform.rotate(myimage,180)]
 
-	def turns(self):
+	def turns(self): # Checks buttons
 		for event in pygame.event.get():
 			if event.type == QUIT:
 				exit()
@@ -83,7 +84,7 @@ class Pac:
 				elif event.key == K_UP and self.direction != 2:
 					if self.movable(-2):
 						self.direction = -2    
-	def move(self):
+	def move(self): # Moves the Ghost a step on his choosen direction
 		global score
 		global ghost
 		if self.direction % 2 == 1:
@@ -116,12 +117,12 @@ class Pac:
 		elif self.x == -1:
 			self.x = 19
 
-	def movable(self, look):
+	def movable(self, look): # Checks if the desired location is available to move
 		if look % 2 == 1:
 			return grid[self.y][self.x+look] < 4
 		return grid[self.y+look / 2][self.x] < 4
 
-	def modifyImage(self):
+	def modifyImage(self): # Modify Ghost costume by its direction.
 		global myimage
 		if self.open:
 			myimage = self.images[self.direction]
@@ -220,40 +221,22 @@ class Ghosts: # Default Blinky behaviour, follows pacman where ever he goes
 
 	def directionsAvailable(self): # Returns a string of available directions of movement [0] = Right, [1] = Down, [2] = Left, [3] = Up
 		directions = ""
-		if self.direction % 2 == 1:
-			if self.movable() and self.direction == 1:
-				directions += "1" #Right
-			else:
-				directions += "0"
-			if grid[self.y+1][self.x % 20] < 4: #Down
-				directions += "1"
-			else:
-				directions += "0"
-			if self.movable() and self.direction == -1:
-				directions += "1" #Left
-			else:
-				directions += "0"
-			if grid[self.y-1][self.x % 20] < 4: #Up
-				directions += "1"
-			else:
-				directions += "0"
+		if self.movable(1) and self.direction != -1: #Right
+			directions += "1"
 		else:
-			if grid[self.y][(self.x+1) % 20] < 4: #Right
-				directions += "1"
-			else:
-				directions += "0"
-			if self.movable() and self.direction == 2:
-				directions += "1" #Down
-			else:
-				directions += "0"
-			if grid[self.y][(self.x-1) % 20] < 4: #Left
-				directions += "1"
-			else:
-				directions += "0"
-			if self.movable() and self.direction == -2:
-				directions += "1" #Up
-			else:
-				directions += "0"
+			directions += "0"
+		if self.movable(2) and self.direction != -2: #Down
+			directions += "1"
+		else:
+			directions += "0"
+		if self.movable(-1) and self.direction != 1: #Left
+			directions += "1"
+		else:
+			directions += "0"
+		if self.movable(-2) and self.direction != 2: #Up
+			directions += "1"
+		else:
+			directions += "0"
 		return directions
 
 	def calculateRoute(self, x, y, target): #Calculates distance to pacman if not dead. If its dead tries to find his way to home
@@ -261,10 +244,10 @@ class Ghosts: # Default Blinky behaviour, follows pacman where ever he goes
 			return math.hypot((pacman.x - x * 1.0),(pacman.y - y*1.0))
 		return math.hypot((8 - x * 1.0),(8 - y*1.0))
 
-	def movable(self): #Checks if the desired location is available to move
-		if self.direction % 2 == 1:
-			return grid[self.y][self.x+self.direction] < 4 and grid[self.y][self.x+self.direction] >= 0
-		return grid[self.y+self.direction/ 2][self.x] < 4 and grid[self.y+self.direction/ 2][self.x] >= 0
+	def movable(self, face): #Checks if the desired location is available to move
+		if face % 2 == 1:
+			return grid[self.y][(self.x+face)%20] < 4 and grid[self.y][(self.x+face)%20] >= 0
+		return grid[self.y+face/ 2][self.x] < 4 and grid[self.y+face/ 2][self.x] >= 0
 
 	def move(self): #Choses movement location according to current status and modify direction accordingly
 		if self.dead:
@@ -274,7 +257,7 @@ class Ghosts: # Default Blinky behaviour, follows pacman where ever he goes
 		else:
 			self.direction = self.route("run")
 		self.modifyImage()
-		if self.movable():
+		if self.movable(self.direction):
 			self.moveFront()
 
 	def modifyImage(self): # Modify Ghost costume by its direction.
@@ -295,7 +278,7 @@ class Clyde(Ghosts): # Clyde is a bit Ghost, poor Clyde. He acts like Blinky whe
 		else:
 			self.direction = self.route("corner")
 			self.modifyImage()
-			if self.movable():
+			if self.movable(self.direction):
 				self.moveFront()
 		
 	def calculateRoute(self, x, y, target): #Calculates distance to bottom left if target is the corner if not imitates Blinky
@@ -318,20 +301,20 @@ def modifyGrid(): # Creates and fills in the game area
 				screen.blit(myimage, Rect(192+x*32+2,39+y*32+2,28,28))
 			elif (grid[y][x] == 2):	# Food
 				pygame.draw.circle(screen,(243, 180, 147),(192+x*32+16, 39+y*32+16),3)
-			elif (grid[y][x] == 3):	# Power - Up
+			elif (grid[y][x] == 3):	# Power Up
 				pygame.draw.circle(screen,(102, 40, 40),(192+x*32+16, 39+y*32+16),10)
 			elif (grid[y][x] == 4): # Wall
 				pygame.draw.rect(screen,(31, 68, 245),Rect(192+x*32,39+y*32,32,32),3)
 			elif (grid[y][x] == 9): # Respawn
 				pygame.draw.rect(screen,(25, 25, 25),Rect(192+x*32,39+y*32,32,32),3)
 			elif (grid[y][x] == 5): # Blinky
-				screen.blit(blinky.image, Rect(190+x*32+2,38+y*32+2,28,28))
+				screen.blit(ghosts[0].image, Rect(190+x*32+2,38+y*32+2,28,28))
 			elif (grid[y][x] == 6): # Pinky
-				screen.blit(pinky.image, Rect(190+x*32+2,38+y*32+2,28,28))
+				screen.blit(ghosts[1].image, Rect(190+x*32+2,38+y*32+2,28,28))
 			elif (grid[y][x] == 7): # Clyde
-				screen.blit(clyde.image, Rect(190+x*32+2,38+y*32+2,28,28))
+				screen.blit(ghosts[2].image, Rect(190+x*32+2,38+y*32+2,28,28))
 			elif (grid[y][x] == 8): # Inky
-				screen.blit(inky.image, Rect(190+x*32+2,38+y*32+2,28,28))
+				screen.blit(ghosts[3].image, Rect(190+x*32+2,38+y*32+2,28,28))
 			elif (grid[y][x] == -1): # Ghosts Scared
 				screen.blit(scared, Rect(190+x*32+2,38+y*32+2,28,28))
 			elif (grid[y][x] == -2): # Ghosts eaten by Mr. Pac
@@ -340,25 +323,17 @@ def modifyGrid(): # Creates and fills in the game area
 		screen.blit(myimage, Rect(20 + 30*i,20,28,28))
 
 def resetGame(): # Readies game for re-play, resets characters
-	global blinky
-	global pinky
-	global inky
-	global clyde
+	global ghosts
 
 	grid[pacman.y][pacman.x] = 0
 
-	grid[blinky.y][blinky.x] = blinky.replacement
-	grid[pinky.y][pinky.x] = pinky.replacement
-	grid[clyde.y][clyde.x] = clyde.replacement
-	grid[inky.y][inky.x] = inky.replacement
+	for i in ghosts:
+		grid[i.y][i.x] = i.replacement
 
 	pacman.x, pacman.y = 10, 3
 	pacman.direction = 1
 
-	blinky = Ghosts(1,9,1, blinkyImages, 5)
-	pinky = Pinky(18,9,-1, pinkyImages, 6)
-	clyde = Clyde(4,15,-2, clydeImages, 7)
-	inky = Inky(15,15,-2, inkyImages, 8)
+	ghosts = [Ghosts(1,9,1, blinkyImages, 5), Pinky(18,9,-1, pinkyImages, 6), Clyde(4,15,-2, clydeImages, 7), Inky(15,15,-2, inkyImages, 8)]
 
 def isGridEmpty(): #Checks if any food is left on the field 
 	for i in grid:
@@ -373,10 +348,8 @@ clock = pygame.time.Clock()
 initial_time=time.time()
 old_time=0
 pacman = Pac(10,3,1)#10,3
-blinky = Ghosts(1,9,1, blinkyImages, 5)
-pinky = Pinky(18,9,-1, pinkyImages, 6)
-clyde = Clyde(4,15,-2, clydeImages, 7)
-inky = Inky(15,15,-2, inkyImages, 8)
+
+ghosts = [Ghosts(1,9,1, blinkyImages, 5), Pinky(18,9,-1, pinkyImages, 6), Clyde(4,15,-2, clydeImages, 7), Inky(15,15,-2, inkyImages, 8)]
 
 modifyGrid()
 
@@ -389,21 +362,16 @@ while True:
         		pacman.turns()
    	       		pacman.modifyImage()
    	       		pacman.move()
-   	       		blinky.checkAlive()
-   	       		pinky.checkAlive()
-   	       		clyde.checkAlive()
-   	       		inky.checkAlive()
+   	       		for i in ghosts:
+   	       			i.checkAlive()
 
    	       	if current_time % 3 == 0:
-   	       		blinky.mode, pinky.mode, clyde.mode, inky.mode = (ghost == 0), (ghost == 0), (ghost == 0), (ghost == 0)
+   	       		for i in ghosts:
+   	       			i.mode = (ghost == 0)
+   	       			i.move()
    	       		if ghost != 0:
    	       			ghost -= 1
-   	       		
-   	       		blinky.move()
-   	       		pinky.move()
-   	       		clyde.move()
-   	       		inky.move()
-        	
+
         	modifyGrid()
         	old_time=current_time
         	if gameOver:
