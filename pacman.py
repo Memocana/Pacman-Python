@@ -203,10 +203,10 @@ class Ghosts: # Default Blinky behaviour, follows pacman where ever he goes
 				elif counter == 3:
 					dist = self.calculateRoute(self.x, self.y-1, target)
 					directionToMove = -2
-			if directionToMove != 0 and (dist < minDistance or minDistance == -1) and (target != "run"):
+			if directionToMove != 0 and (dist < minDistance or minDistance == -1) and (target != "run"): # Min distance to
 				minDistance = dist
 				idealDirection = directionToMove
-			elif directionToMove != 0 and dist > minDistance and target == "run":
+			elif directionToMove != 0 and dist > minDistance: #Max distance to PacMan
 				minDistance = dist
 				idealDirection = directionToMove
 			counter += 1
