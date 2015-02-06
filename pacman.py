@@ -301,14 +301,8 @@ def modifyGrid(): # Creates and fills in the game area
 				pygame.draw.rect(screen,(31, 68, 245),Rect(192+x*32,39+y*32,32,32),3)
 			elif (grid[y][x] == 9): # Respawn
 				pygame.draw.rect(screen,(25, 25, 25),Rect(192+x*32,39+y*32,32,32),3)
-			elif (grid[y][x] == 5): # Blinky
-				screen.blit(ghosts[0].image, Rect(190+x*32+2,38+y*32+2,28,28))
-			elif (grid[y][x] == 6): # Pinky
-				screen.blit(ghosts[1].image, Rect(190+x*32+2,38+y*32+2,28,28))
-			elif (grid[y][x] == 7): # Clyde
-				screen.blit(ghosts[2].image, Rect(190+x*32+2,38+y*32+2,28,28))
-			elif (grid[y][x] == 8): # Inky
-				screen.blit(ghosts[3].image, Rect(190+x*32+2,38+y*32+2,28,28))
+			elif (grid[y][x] >= 5): # Ghosts
+				screen.blit(ghosts[grid[y][x] - 5].image, Rect(190+x*32+2,38+y*32+2,28,28))
 			elif (grid[y][x] == -1): # Ghosts Scared
 				screen.blit(scared, Rect(190+x*32+2,38+y*32+2,28,28))
 			elif (grid[y][x] == -2): # Ghosts eaten by Mr. Pac
