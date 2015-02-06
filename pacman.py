@@ -150,7 +150,7 @@ class Ghosts: # Default Blinky behaviour, follows pacman where ever he goes
 
 	def moveFront(self): # Moves the Ghost a step on his choosen direction
 		global gameOver
-
+		self.modifyImage()
 		if self.direction % 2 == 1: # Make one step (Odds: Left, Right; Evens: Up, Down)
 			self.x += self.direction
 			if (self.replacement < 4 and self.replacement > 1) or self.replacement == 0:
@@ -192,16 +192,16 @@ class Ghosts: # Default Blinky behaviour, follows pacman where ever he goes
 			dist = 0
 			directionToMove = 0
 			if i == "1":
-				if counter % 2 == 0:
+				if counter % 2 == 0: # Distance calculation according to possible moves
 					dist = self.calculateRoute(self.x - (counter - 1), self.y, target)
 					directionToMove = -(counter - 1)
 				else:
 					dist = self.calculateRoute(self.x, self.y - (counter - 2), target)
 					directionToMove = -2 * (counter - 2)
-			if directionToMove != 0 and (dist < minDistance or minDistance == -1) and (target != "run"):
+			if directionToMove != 0 and (dist < minDistance or minDistance == -1) and (target != "run"): # Get min on any target
 				minDistance = dist
 				idealDirection = directionToMove
-			elif directionToMove != 0 and dist > minDistance and target == "run":
+			elif directionToMove != 0 and dist > minDistance and target == "run": # Get max if running from Mr. Pac
 				minDistance = dist
 				idealDirection = directionToMove
 			counter += 1
@@ -216,22 +216,17 @@ class Ghosts: # Default Blinky behaviour, follows pacman where ever he goes
 
 	def directionsAvailable(self): # Returns a string of available directions of movement [0] = Right, [1] = Down, [2] = Left, [3] = Up
 		directions = ""
-		if self.movable(1) and self.direction != -1: #Right
-			directions += "1"
-		else:
-			directions += "0"
-		if self.movable(2) and self.direction != -2: #Down
-			directions += "1"
-		else:
-			directions += "0"
-		if self.movable(-1) and self.direction != 1: #Left
-			directions += "1"
-		else:
-			directions += "0"
-		if self.movable(-2) and self.direction != 2: #Up
-			directions += "1"
-		else:
-			directions += "0"
+		for i in range(4):
+			if i % 2 == 0:
+				if self.movable(1 - i) and self.direction != (i-1): #Left - Right
+					directions += "1"
+				else:
+					directions += "0"
+			else:
+				if self.movable(4 - 2*i) and self.direction != (2*i - 4): #Down - Up
+					directions += "1"
+				else:
+					directions += "0"
 		return directions
 
 	def calculateRoute(self, x, y, target): #Calculates distance to pacman if not dead. If its dead tries to find his way to home
@@ -251,7 +246,6 @@ class Ghosts: # Default Blinky behaviour, follows pacman where ever he goes
 			self.direction = self.route("pacman")
 		else:
 			self.direction = self.route("run")
-		self.modifyImage()
 		if self.movable(self.direction):
 			self.moveFront()
 
@@ -272,7 +266,6 @@ class Clyde(Ghosts): # Clyde is a bit Ghost, poor Clyde. He acts like Blinky whe
 			Ghosts.move(self)
 		else:
 			self.direction = self.route("corner")
-			self.modifyImage()
 			if self.movable(self.direction):
 				self.moveFront()
 		
@@ -281,7 +274,7 @@ class Clyde(Ghosts): # Clyde is a bit Ghost, poor Clyde. He acts like Blinky whe
 			return Ghosts.calculateRoute(self, x, y, target)
 		return math.hypot((x * 1.0),(20 - y*1.0))
 
-class Inky(Ghosts): # Currently a Blinky clone, will the direction blinky is facing
+class Inky(Ghosts): # Currently a Blinky clone, will face the direction blinky is facing
 	def __init__(self,x,y,direction,image,name):
 		Ghosts.__init__(self,x,y,direction,image,name) #Missing stuff here
 
