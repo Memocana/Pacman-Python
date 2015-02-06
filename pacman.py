@@ -8,7 +8,7 @@ from sys import exit
 import math
 
 pygame.init()
-screen=pygame.display.set_mode((1024,718),0,32)
+screen=pygame.display.set_mode((1024,718),pygame.FULLSCREEN)
 pygame.display.set_caption("PacMan!")
 pygame.font.init()
 
@@ -70,8 +70,9 @@ class Pac:
 		for event in pygame.event.get():
 			if event.type == QUIT:
 				exit()
-				self.direction = 0
 			if event.type == KEYDOWN:
+				if event.key == K_q:
+					exit()
 				if event.key == K_RIGHT and self.direction != -1:
 					if self.movable(1):
 						self.direction = 1
@@ -108,7 +109,7 @@ class Pac:
 					score += 5 #invinciblity shizz
 					ghost = 15
 				grid[self.y-self.direction/2][self.x] = 0
-				grid[self.y][self.x%20] = 1
+				grid[self.y][self.x] = 1
 			elif grid[self.y+self.direction/2][self.x] < 9:
 				gameOver = True
 
@@ -370,7 +371,7 @@ while True:
     	multiplier=3 #must be odd
         current_time=int((time.time()-initial_time)*multiplier)
         modifyGrid()
-
+        pacman.turns()
         if current_time % 2 == 0:
         	if lives == 0:
         		screen.blit(gameOverImage, (192,220))
