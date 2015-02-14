@@ -259,7 +259,7 @@ class Pinky(Ghosts): #Pinky predicts the movement of Pacman, She is always exact
 			return math.hypot((pacman.x + pacman.direction * 4 - x * 1.0),(pacman.y  - y*1.0))
 		return math.hypot((pacman.x  - x * 1.0),(pacman.y + pacman.direction * -2 - y*1.0))
 
-class Clyde(Ghosts): # Clyde is a bit Ghost, poor Clyde. He acts like Blinky when he is away from Mr. Pac but moves back to his corner if he is closer than 5 blocks 
+class Clyde(Ghosts): # Clyde is a bit stupid, poor Clyde. He acts like Blinky when he is away from Mr. Pac but moves back to his corner if he is closer than 5 blocks 
 
 	def move(self): # Chooses between moving to the corner or moving towards pac
 		if not self.mode or self.dead or self.calculateRoute(self.x, self.y, "pacman") > 5:
