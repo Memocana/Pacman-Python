@@ -29,6 +29,11 @@ pinkyImages = [None, pygame.image.load('images/pinky1.png'), pygame.image.load('
 inkyImages = [None, pygame.image.load('images/inky1.png'), pygame.image.load('images/inky2.png'), pygame.image.load('images/inky-2.png'), pygame.image.load('images/inky-1.png')]
 clydeImages = [None, pygame.image.load('images/clyde1.png'), pygame.image.load('images/clyde2.png'), pygame.image.load('images/clyde-2.png'), pygame.image.load('images/clyde-1.png')]
 
+font = pygame.font.Font("Fonts/ARCADECLASSIC.TTF",40)
+fontSmall = pygame.font.Font("Fonts/ARCADECLASSIC.TTF",24)
+
+scores = font.render("Score", True,(255,255,255))
+
 # Initialize In Game Variables
 score = 0
 ghost = 0
@@ -73,21 +78,23 @@ class Pac:
 			if event.type == KEYDOWN:
 				if event.key == K_q:
 					exit()
-				if event.key == K_RIGHT and self.direction != -1:
+				if event.key == K_d and self.direction != -1:
 					if self.movable(1):
 						self.direction = 1
-				elif event.key == K_LEFT and self.direction != 1:
+				elif event.key == K_a and self.direction != 1:
 					if self.movable(-1):
 						self.direction = -1
-				elif event.key == K_DOWN and self.direction != -2:
+				elif event.key == K_s and self.direction != -2:
 					if self.movable(2):
 						self.direction = 2
-				elif event.key == K_UP and self.direction != 2:
+				elif event.key == K_w and self.direction != 2:
 					if self.movable(-2):
 						self.direction = -2    
 	def move(self): # Moves the Ghost a step on his choosen direction
 		global score
 		global ghost
+		if 1 not in grid:
+			grid[self.y][self.x] = 1
 		if self.direction % 2 == 1:
 			if grid[self.y][(self.x+self.direction)] < 4:
 				self.x += self.direction
@@ -145,8 +152,11 @@ class Ghosts: # Default Blinky behaviour, follows pacman where ever he goes
 		self.image = self.images[direction]
 
 	def checkAlive(self): # Checks collision with PacMan in Scared Mode
-		if not self.mode and (grid[self.y][self.x] == 1 or self.replacement == 1) :
+		global score
+		if not self.dead and not self.mode and (grid[self.y][self.x] == 1 or self.replacement == 1) :
+			score += 10
 			self.dead = True
+
 
 	def moveFront(self): # Moves the Ghost a step on his choosen direction
 		global gameOver
@@ -169,7 +179,7 @@ class Ghosts: # Default Blinky behaviour, follows pacman where ever he goes
 			self.dead = False
 			
 		if self.replacement == 1 and self.mode and not self.dead: # Checks collision with PacMan in Regular Mode
-			self.replacement = 2
+			self.replacement = 0
 			gameOver = True
 
 		if self.dead: #Image in current tile
@@ -281,6 +291,7 @@ class Inky(Ghosts): # Currently a Blinky clone, will face the direction blinky i
 #________________________________________________________________
 #main game methods:
 def modifyGrid(): # Creates and fills in the game area
+	global score
 	screen.blit(background,(0,0)) 
 	pygame.draw.rect(screen,(255,255,255),Rect(192,39,640,640),3) #draws outer frame
 	for x in xrange(20):
@@ -303,6 +314,10 @@ def modifyGrid(): # Creates and fills in the game area
 				screen.blit(eyes, Rect(190+x*32+2,38+y*32+2,28,28))
 	for i in range(lives): #Shows how many lives the player has
 		screen.blit(myimage, Rect(20 + 30*i,20,28,28))
+	screen.blit(scores,(20,70))
+	points = font.render(str(score*10), True,(255,255,255))
+	screen.blit(points,(20,100))
+
 
 def resetGame(): # Readies game for re-play, resets characters
 	global ghosts
